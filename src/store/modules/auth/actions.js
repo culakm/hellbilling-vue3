@@ -1,94 +1,52 @@
 let timer;
-//import config from '../../../app_config.js';
+import { auth } from '../../../firebase.js';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
 
 export default {
 	async login(context, payload) {
-		return context.dispatch('auth', { ...payload, mode: 'login' });
-	},
-	async signup(context, payload) {
-		return context.dispatch('auth', { ...payload, mode: 'signup' });
-	},
-	async auth(context, payload) {
-		const mode = payload.mode;
-		const API_KEY = import.meta.env.VITE_API_KEY;
+		console.log('treba riesit ulozenie API_KEY vo firebase.js a import.meta.env.VITE_API_KEY');
 
-		let url = '';
-		let body = '';
-		if (mode === 'login') {
-			url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`;
-			body = JSON.stringify({
-				email: payload.email,
-				password: payload.password,
-				returnSecureToken: true
-			});
-		}
-		else if (mode === 'signup') {
-			url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${API_KEY}`;
-			body = JSON.stringify({
-				email: payload.email,
-				password: payload.password,
-				displayName: payload.displayName,
-				returnSecureToken: true
-			});
-		}
-
-		const response = await fetch(url, { method: 'POST', body: body });
-		const responseData = await response.json();
-		if (!response.ok) {
+		const responseData = await signInWithEmailAndPassword(auth, payload.email, payload.password);
+		if (!responseData) {
 			const error = new Error(responseData.message || 'Failed to login. Check your login data.');
 			throw error;
 		}
 
-		const idToken = responseData.idToken;
-		const userId = responseData.localId;
-		const displayName = responseData.displayName;
+		const idToken = responseData.user.accessToken;
+		const userId = responseData.user.uid;
+		const displayName = responseData.user.displayName;
+		const expiresIn = +responseData._tokenResponse.expiresIn * 1000;
+		const expirationDate = new Date().getTime() + expiresIn;
 
-		if (mode === 'login') {
-			const response2 = await fetch(`https://hellbilling1-default-rtdb.europe-west1.firebasedatabase.app/users/${userId}.json?auth=${idToken}`);
-			const responseData2 = await response2.json();
-			if (!response2.ok) {
-				const error = new Error(`State: coaches, Padlo POST: ${responseData2.error} STATUS: ${response2.status} (${response2.statusText})` || 'Failed to fetch!');
-				throw error;
-			}
+		console.log('displayName', displayName);
 
-			const expiresIn = +responseData.expiresIn * 1000;
-			const expirationDate = new Date().getTime() + expiresIn;
-
-			localStorage.setItem('token', idToken);
-			localStorage.setItem('userId', userId);
-			localStorage.setItem('displayName', displayName);
-			localStorage.setItem('tokenExpiration', expirationDate);
+		localStorage.setItem('token', idToken);
+		localStorage.setItem('userId', userId);
+		localStorage.setItem('displayName', displayName);
+		localStorage.setItem('tokenExpiration', expirationDate);
 
 
-			timer = setTimeout(function () {
-				context.dispatch('autoLogout');
-			}, expiresIn);
+		timer = setTimeout(function () {
+			context.dispatch('autoLogout');
+		}, expiresIn);
 
-			context.commit('setUser', {
-				token: idToken,
-				userId: userId,
-				displayName: displayName
-			});
-		}
-		else if (mode === 'signup') {
-			return responseData.userId;
-		}
+		context.commit('setUser', {
+			token: idToken,
+			userId: userId,
+			displayName: displayName
+		});
+
 	},
-	// async deleteUser(context, payload) {
-	// 	const userId = payload.userId;
-	// 	const token = context.rootGetters.token;
-	// 	const response = await fetch(`https://hellbilling1-default-rtdb.europe-west1.firebasedatabase.app/users/${userId}.json?auth=${token}`, {
-	// 		method: 'DELETE',
-	// 	});
-	// 	const responseData = await response.json();
+	async signup(context, payload) {
+		// return context.dispatch('auth', { ...payload, mode: 'signup' });
 
-	// 	if (!response.ok) {
-	// 		const error = new Error(`State: coaches, Padlo DELETE: ${responseData.error} STATUS: ${response.status} (${response.statusText})` || 'Failed to fetch!');
-	// 		throw error;
-	// 	}
-
-	// 	context.commit('deleteUser', { userId: userId });
-	// },
+		const responseData = await createUserWithEmailAndPassword(auth, payload.email, payload.password);
+		console.log('responseData.user', responseData.user);
+		await updateProfile(responseData.user, {
+			displayName: payload.displayName,
+			photoURL: "https://example.com/jane-q-user/profile.jpg"
+		})
+	},
 	tryLogin(context) {
 		const token = localStorage.getItem('token');
 		const userId = localStorage.getItem('userId');
@@ -126,6 +84,13 @@ export default {
 			userId: null,
 			displayName: null
 		});
+
+		signOut(auth).then(() => {
+			console.log('User signed out');
+		}).catch((error) => {
+			console.error(error);
+		});
+
 	},
 	autoLogout(context) {
 		context.dispatch('logout');

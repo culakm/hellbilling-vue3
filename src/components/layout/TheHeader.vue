@@ -10,7 +10,7 @@
 					<router-link to="/items">items</router-link>
 				</li>
 				<li v-if="isLoggedIn">
-					<base-button @click="logout">Logout --{{ displayName }}--</base-button>
+					<base-button @click="logout">Logout {{ displayName }}</base-button>
 				</li>
 				<li v-else>
 					<router-link to="/auth">Login</router-link>
@@ -29,6 +29,9 @@ export default {
 		},
 		displayName() {
 			return this.$store.getters.displayName;
+		},
+		userId() {
+			return this.$store.getters.userId;
 		},
 	},
 	methods: {

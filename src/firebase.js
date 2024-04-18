@@ -5,7 +5,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 // import { getFunctions } from 'firebase/functions';
 
 const firebaseConfig = {
-	apiKey: import.meta.env.VITE_API_KEY,
+	apiKey: "AIzaSyB8GmEbrAaPYWqjxFA1-zl0-T-sPOdpQoc", //import.meta.env.VITE_API_KEY,
 	authDomain: "hellbilling3.firebaseapp.com",
 	projectId: "hellbilling3",
 	storageBucket: "hellbilling3.appspot.com",
@@ -16,15 +16,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 // export const db = getDatabase();
+// export const db = getFirestore(app);
 export const auth = getAuth(app);
 // export const functionsFB = getFunctions(app);
-
-// kontrola stavu prihlasenia
-onAuthStateChanged(auth, (user) => {
-	if (user) {
-		// const uid = user.uid;
-		alert('User is signed in');
-	} else {
-		alert('User is signed out');
-	}
-});
