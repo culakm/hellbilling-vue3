@@ -22,8 +22,17 @@ export default {
 		},
 	},
 	methods: {
-		deleteUser() {
-			this.$store.dispatch('users/deleteUser', { userId: this.userId });
+		async deleteUser() {
+			try {
+				await this.$store.dispatch('delete', { userId: this.userId });
+				// let updatedUserData = { ...userData, authId: userId };
+				this.$store.dispatch('users/deleteUser', { userId: this.userId });
+
+			} catch (error) {
+				this.error = `Can't delete user because: ${error.message}` || 'Something went wrong!';
+				return;
+			}
+
 			this.$router.replace('/users');
 		},
 	}

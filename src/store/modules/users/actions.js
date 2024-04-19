@@ -1,3 +1,6 @@
+import { db } from '../../../firebase.js';
+import { collection, doc, setDoc, deleteDoc, getDocs } from "firebase/firestore";
+
 export default {
 	async addUser(context, payload) {
 		const authId = payload.authId;
@@ -7,25 +10,11 @@ export default {
 			description: payload.description,
 			email: payload.email,
 		};
-		const token = context.rootGetters.token;
-		// const response = await fetch(`https://hellbilling1-default-rtdb.europe-west1.firebasedatabase.app/users.json?auth=${token}`, {
-		// 	method: 'POST',
-		const response = await fetch(`https://hellbilling1-default-rtdb.europe-west1.firebasedatabase.app/users/${authId}.json?auth=${token}`, {
-			method: 'PUT',//POST je pre automaticky generovane ID, PUT je pre vlastne ID, ktore je authId a je zadefinovane aj v URL
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(userData)
-		});
-		const responseData = await response.json();
+		await setDoc(doc(db, "users", authId), userData);
 
-		if (!response.ok) {
-			const error = new Error(`State: coaches, Padlo POST: ${responseData.error} STATUS: ${response.status} (${response.statusText})` || 'Failed to fetch!');
-			throw error;
-		}
-
-		const userId = responseData.name;
 		context.commit('addUser', {
 			...userData,
-			id: userId
+			id: authId
 		});
 	},
 	async updateUser(context, payload) {
@@ -53,38 +42,40 @@ export default {
 	},
 	async deleteUser(context, payload) {
 		const userId = payload.userId;
-		const token = context.rootGetters.token;
-		const response = await fetch(`https://hellbilling1-default-rtdb.europe-west1.firebasedatabase.app/users/${userId}.json?auth=${token}`, {
-			method: 'DELETE',
-		});
-		const responseData = await response.json();
-
-		if (!response.ok) {
-			const error = new Error(`State: coaches, Padlo DELETE: ${responseData.error} STATUS: ${response.status} (${response.statusText})` || 'Failed to fetch!');
-			throw error;
-		}
+		await deleteDoc(doc(db, "users", userId));
 
 		context.commit('deleteUser', { userId: userId });
 	},
+	// async deleteUser(context, payload) {
+	// 	const userId = payload.userId;
+	// 	const token = context.rootGetters.token;
+	// 	const response = await fetch(`https://hellbilling1-default-rtdb.europe-west1.firebasedatabase.app/users/${userId}.json?auth=${token}`, {
+	// 		method: 'DELETE',
+	// 	});
+	// 	const responseData = await response.json();
+
+	// 	if (!response.ok) {
+	// 		const error = new Error(`State: coaches, Padlo DELETE: ${responseData.error} STATUS: ${response.status} (${response.statusText})` || 'Failed to fetch!');
+	// 		throw error;
+	// 	}
+
+	// 	context.commit('deleteUser', { userId: userId });
+	// },
 	async loadUsers(context) {
-		const token = context.rootGetters.token;
-		const response = await fetch(`https://hellbilling1-default-rtdb.europe-west1.firebasedatabase.app/users.json?auth=${token}`);
-		const responseData = await response.json();
-		if (!response.ok) {
-			const error = new Error(`state: coaches, Padlo fetch coaches.json: ${responseData.message}` || 'Failed to fetch!');
-			throw error;
-		}
 		const users = [];
-		for (const key in responseData) {
+
+		const querySnapshot = await getDocs(collection(db, "users"));
+		querySnapshot.forEach((doc) => {
+			const userData = doc.data();
 			const user = {
-				id: key,
-				firstName: responseData[key].firstName,
-				lastName: responseData[key].lastName,
-				email: responseData[key].email,
-				description: responseData[key].description,
+				id: doc.id,
+				firstName: userData.firstName,
+				lastName: userData.lastName,
+				email: userData.email,
+				description: userData.description,
 			};
 			users.push(user);
-		}
+		});
 		context.commit('setUsers', users);
-	}
+	},
 };

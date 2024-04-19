@@ -40,6 +40,11 @@ export default {
 			required: false,
 			default: () => ({}),
 		},
+		clearForm: {
+			type: Boolean,
+			required: false,
+			default: false,
+		},
 	},
 	data() {
 		return {
@@ -121,6 +126,16 @@ export default {
 				description: this.description.val,
 			};
 			this.$emit('save-data', formData);
+		},
+	},
+	watch: {
+		clearForm() {
+			this.userId = null;
+			this.firstName.val = '';
+			this.lastName.val = '';
+			this.email.val = '';
+			this.password.val = '';
+			this.description.val = '';
 		},
 	},
 };

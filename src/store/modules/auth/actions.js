@@ -18,8 +18,6 @@ export default {
 		const expiresIn = +responseData._tokenResponse.expiresIn * 1000;
 		const expirationDate = new Date().getTime() + expiresIn;
 
-		console.log('displayName', displayName);
-
 		localStorage.setItem('token', idToken);
 		localStorage.setItem('userId', userId);
 		localStorage.setItem('displayName', displayName);
@@ -38,14 +36,21 @@ export default {
 
 	},
 	async signup(context, payload) {
-		// return context.dispatch('auth', { ...payload, mode: 'signup' });
-
 		const responseData = await createUserWithEmailAndPassword(auth, payload.email, payload.password);
-		console.log('responseData.user', responseData.user);
 		await updateProfile(responseData.user, {
 			displayName: payload.displayName,
 			photoURL: "https://example.com/jane-q-user/profile.jpg"
-		})
+		});
+		return responseData.user.uid;
+	},
+	async delete(context, payload) {
+		alert('tu bude delete');
+		// const responseData = await createUserWithEmailAndPassword(auth, payload.email, payload.password);
+		// await updateProfile(responseData.user, {
+		// 	displayName: payload.displayName,
+		// 	photoURL: "https://example.com/jane-q-user/profile.jpg"
+		// });
+		// return responseData.user.uid;
 	},
 	tryLogin(context) {
 		const token = localStorage.getItem('token');
@@ -85,12 +90,7 @@ export default {
 			displayName: null
 		});
 
-		signOut(auth).then(() => {
-			console.log('User signed out');
-		}).catch((error) => {
-			console.error(error);
-		});
-
+		signOut(auth);
 	},
 	autoLogout(context) {
 		context.dispatch('logout');

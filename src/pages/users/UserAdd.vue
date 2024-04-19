@@ -9,7 +9,7 @@
 				<div v-if="isLoading">
 					<base-spinner></base-spinner>
 				</div>
-				<user-form @save-data="saveData"></user-form>
+				<user-form @save-data="saveData" :clear-form="clearForm"></user-form>
 			</base-card>
 		</section>
 	</div>
@@ -26,6 +26,7 @@ export default {
 		return {
 			isLoading: false,
 			error: null,
+			clearForm: false,
 		};
 	},
 	methods: {
@@ -39,12 +40,11 @@ export default {
 			};
 			try {
 				const userId = await this.$store.dispatch('signup', actionPayload);
-
 				let updatedUserData = { ...userData, authId: userId };
 				await this.$store.dispatch('users/addUser', updatedUserData);
 
 			} catch (error) {
-				this.error = `Component ${this.$options.name}, Padlo fetch lalalal: ${error.message}` || 'Something went wrong!';
+				this.error = `Can't add user because: ${error.message}` || 'Something went wrong!';
 				return;
 			}
 
@@ -52,6 +52,8 @@ export default {
 			this.$router.replace('/users');
 		},
 		handleError() {
+			this.isLoading = false;
+			this.clearForm = true;
 			this.error = null;
 		},
 	},

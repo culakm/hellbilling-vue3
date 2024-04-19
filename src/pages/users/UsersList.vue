@@ -13,7 +13,7 @@
 				</div>
 				<ul v-else-if="hasUsers">
 					<user-item v-for="user in users" :key="user.id" :user-id="user.id" :first-name="user.firstName"
-						:last-name="user.lastName" ></user-item>
+						:last-name="user.lastName"></user-item>
 				</ul>
 				<h3 v-else>No users found</h3>
 			</base-card>
