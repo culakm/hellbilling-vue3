@@ -44,7 +44,7 @@ export default {
 		return responseData.user.uid;
 	},
 	async delete(context, payload) {
-		alert('tu bude delete');
+		// alert('tu bude delete');
 		// const responseData = await createUserWithEmailAndPassword(auth, payload.email, payload.password);
 		// await updateProfile(responseData.user, {
 		// 	displayName: payload.displayName,

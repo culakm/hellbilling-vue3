@@ -24,9 +24,10 @@ export default {
 	methods: {
 		async deleteUser() {
 			try {
-				await this.$store.dispatch('delete', { userId: this.userId });
+				alert('userov mazat nemozeme skusime to cez cloud firestore');
+				//await this.$store.dispatch('delete', { userId: this.userId });
 				// let updatedUserData = { ...userData, authId: userId };
-				this.$store.dispatch('users/deleteUser', { userId: this.userId });
+				//this.$store.dispatch('users/deleteUser', { userId: this.userId });
 
 			} catch (error) {
 				this.error = `Can't delete user because: ${error.message}` || 'Something went wrong!';
