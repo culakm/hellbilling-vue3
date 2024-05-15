@@ -32,3 +32,4 @@ coverage
 
 # moje
 src/firebase.js
+.firebase/*
