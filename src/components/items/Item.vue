@@ -12,10 +12,10 @@
 <script>
 export default {
 	name: 'ItemItem',
-	props: ['itemId', 'firstName', 'lastName'],
+	props: ['itemId', 'firstName'],
 	computed: {
 		fullName() {
-			return `${this.firstName} ${this.lastName}`;
+			return `${this.firstName} `;
 		},
 		itemDetailsLink() {
 			return this.$route.path + `/${this.itemId}`;

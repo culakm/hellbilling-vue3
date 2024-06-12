@@ -5,16 +5,6 @@
 			<input type="text" id="first-name" v-model.trim="firstName.val" @blur="clearValidity('firstName')" />
 			<p v-if="!firstName.isValid">Firstname must not be empty!</p>
 		</div>
-		<div class="form-control" :class="{ invalid: !lastName.isValid }">
-			<label for="last-name">Last Name</label>
-			<input type="text" id="last-name" v-model.trim="lastName.val" @blur="clearValidity('lastName')" />
-			<p v-if="!lastName.isValid">Lastname must not be empty!</p>
-		</div>
-		<div class="form-control" :class="{ invalid: !email.isValid }">
-			<label for="email">Email</label>
-			<input type="text" id="email" v-model.trim="email.val" @blur="clearValidity('email')" />
-			<p v-if="!email.isValid">Email must not be empty!</p>
-		</div>
 		<div class="form-control" :class="{ invalid: !description.isValid }">
 			<label for="description">Description</label>
 			<textarea id="description" rows="5" v-model.trim="description.val"
@@ -43,14 +33,6 @@ export default {
 				val: '',
 				isValid: true
 			},
-			lastName: {
-				val: '',
-				isValid: true
-			},
-			email: {
-				val: '',
-				isValid: true
-			},
 			description: {
 				val: '',
 				isValid: true
@@ -61,8 +43,6 @@ export default {
 	created() {
 		this.itemId = this.item.id || null;
 		this.firstName.val = this.item.firstName || '';
-		this.lastName.val = this.item.lastName || '';
-		this.email.val = this.item.email || '';
 		this.description.val = this.item.description || '';
 	},
 	methods: {
@@ -73,14 +53,6 @@ export default {
 			this.formIsValid = true;
 			if (this.firstName.val === '') {
 				this.firstName.isValid = false;
-				this.formIsValid = false;
-			}
-			if (this.lastName.val === '') {
-				this.lastName.isValid = false;
-				this.formIsValid = false;
-			}
-			if (this.email.val === '' || !this.email.val.includes('@')) {
-				this.email.isValid = false;
 				this.formIsValid = false;
 			}
 			if (this.description.val === '') {
@@ -96,8 +68,6 @@ export default {
 			const formData = {
 				itemId: this.itemId,
 				firstName: this.firstName.val,
-				lastName: this.lastName.val,
-				email: this.email.val,
 				description: this.description.val,
 			};
 			this.$emit('save-data', formData);

@@ -12,8 +12,7 @@
 					<base-spinner></base-spinner>
 				</div>
 				<ul v-else-if="hasItems">
-					<item v-for="item in items" :key="item.id" :item-id="item.id" :first-name="item.firstName"
-						:last-name="item.lastName"></item>
+					<item v-for="item in items" :key="item.id" :item-id="item.id" :first-name="item.firstName"></item>
 				</ul>
 				<h3 v-else>No items found</h3>
 			</base-card>

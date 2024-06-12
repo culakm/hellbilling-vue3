@@ -1,7 +1,8 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-// import { connectAuthEmulator } from 'firebase/auth';
+import { connectAuthEmulator } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { connectFirestoreEmulator } from 'firebase/firestore';
 // import { getDatabase } from 'firebase/database';
 // import { getFunctions } from 'firebase/functions';
 
@@ -19,10 +20,11 @@ const app = initializeApp(firebaseConfig);
 /* Firebase services */
 // Authentication
 export const auth = getAuth(app);
-//connectAuthEmulator(auth, 'http://localhost:9099');
+// connectAuthEmulator(auth, 'http://localhost:9099');
 
 // Databases
 export const db = getFirestore(app);
+// connectFirestoreEmulator(db, 'localhost', 8080);
 // export const db = getDatabase(app);
 
 // Functions

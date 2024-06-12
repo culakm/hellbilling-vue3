@@ -1,37 +1,20 @@
+import { db } from '../../../firebase.js';
+import { collection, doc, addDoc, deleteDoc, getDocs } from "firebase/firestore";
+
 export default {
 	async addItem(context, payload) {
 		const itemData = {
 			firstName: payload.firstName,
-			lastName: payload.lastName,
 			description: payload.description,
-			email: payload.email,
 		};
-		const token = context.rootGetters.token;
-		const response = await fetch(`https://hellbilling1-default-rtdb.europe-west1.firebasedatabase.app/items.json?auth=${token}`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(itemData)
-		});
-		const responseData = await response.json();
-
-		if (!response.ok) {
-			const error = new Error(`State: coaches, Padlo POST: ${responseData.error} STATUS: ${response.status} (${response.statusText})` || 'Failed to fetch!');
-			throw error;
-		}
-
-		const itemId = responseData.name;
-		context.commit('addItem', {
-			...itemData,
-			id: itemId
-		});
+		await addDoc(collection(db, 'items'), itemData);
+		context.commit('addUser', { itemData });
 	},
 	async updateItem(context, payload) {
 		const itemData = {
 			itemId: payload.itemId,
 			firstName: payload.firstName,
-			lastName: payload.lastName,
 			description: payload.description,
-			email: payload.email,
 		};
 		const token = context.rootGetters.token;
 		const response = await fetch(`https://hellbilling1-default-rtdb.europe-west1.firebasedatabase.app/items/${itemData.itemId}.json?auth=${token}`, {
@@ -64,24 +47,19 @@ export default {
 		context.commit('deleteItem', { itemId: itemId });
 	},
 	async loadItems(context) {
-		const token = context.rootGetters.token;
-		const response = await fetch(`https://hellbilling1-default-rtdb.europe-west1.firebasedatabase.app/items.json?auth=${token}`);
-		const responseData = await response.json();
-		if (!response.ok) {
-			const error = new Error(`state: coaches, Padlo fetch coaches.json: ${responseData.message}` || 'Failed to fetch!');
-			throw error;
-		}
+
 		const items = [];
-		for (const key in responseData) {
+
+		const querySnapshot = await getDocs(collection(db, "items"));
+		querySnapshot.forEach((doc) => {
+			const itemData = doc.data();
 			const item = {
-				id: key,
-				firstName: responseData[key].firstName,
-				lastName: responseData[key].lastName,
-				email: responseData[key].email,
-				description: responseData[key].description,
+				id: doc.id,
+				firstName: itemData.firstName,
+				description: itemData.description,
 			};
 			items.push(item);
-		}
+		});
 		context.commit('setItems', items);
 	}
 };

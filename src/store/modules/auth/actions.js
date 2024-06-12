@@ -4,8 +4,6 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, up
 
 export default {
 	async login(context, payload) {
-		console.log('treba riesit ulozenie API_KEY vo firebase.js a import.meta.env.VITE_API_KEY');
-
 		const responseData = await signInWithEmailAndPassword(auth, payload.email, payload.password);
 		if (!responseData) {
 			const error = new Error(responseData.message || 'Failed to login. Check your login data.');
@@ -44,7 +42,6 @@ export default {
 		return responseData.user.uid;
 	},
 	async delete(context, payload) {
-		// alert('tu bude delete');
 		// const responseData = await createUserWithEmailAndPassword(auth, payload.email, payload.password);
 		// await updateProfile(responseData.user, {
 		// 	displayName: payload.displayName,
