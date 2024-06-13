@@ -13,12 +13,14 @@ export default {
 		const idToken = responseData.user.accessToken;
 		const userId = responseData.user.uid;
 		const displayName = responseData.user.displayName;
+		const email = responseData.user.email;
 		const expiresIn = +responseData._tokenResponse.expiresIn * 1000;
 		const expirationDate = new Date().getTime() + expiresIn;
 
 		localStorage.setItem('token', idToken);
 		localStorage.setItem('userId', userId);
 		localStorage.setItem('displayName', displayName);
+		localStorage.setItem('email', email);
 		localStorage.setItem('tokenExpiration', expirationDate);
 
 
@@ -53,6 +55,7 @@ export default {
 		const token = localStorage.getItem('token');
 		const userId = localStorage.getItem('userId');
 		const displayName = localStorage.getItem('displayName');
+		const email = localStorage.getItem('email');
 		const tokenExpiration = localStorage.getItem('tokenExpiration');
 
 		const expiresIn = +tokenExpiration - new Date().getTime();
@@ -69,7 +72,8 @@ export default {
 			context.commit('setUser', {
 				token: token,
 				userId: userId,
-				displayName: displayName
+				displayName: displayName,
+				email: email
 			});
 		}
 	},
@@ -77,6 +81,7 @@ export default {
 		localStorage.removeItem('token');
 		localStorage.removeItem('userId');
 		localStorage.removeItem('displayName');
+		localStorage.removeItem('email');
 		localStorage.removeItem('tokenExpiration');
 
 		clearTimeout(timer);
@@ -84,7 +89,8 @@ export default {
 		context.commit('setUser', {
 			token: null,
 			userId: null,
-			displayName: null
+			displayName: null,
+			email: null
 		});
 
 		signOut(auth);

@@ -8,6 +8,9 @@ export default {
 	displayName(state) {
 		return state.displayName;
 	},
+	email(state) {
+		return state.email;
+	},
 	isAuthenticated(state) {
 		return !!state.token; // true boolean
 	},

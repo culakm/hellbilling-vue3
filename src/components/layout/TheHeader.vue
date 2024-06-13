@@ -6,8 +6,8 @@
 			</h1>
 			<ul>
 				<li v-if="isLoggedIn">
-					<router-link to="/users">users</router-link>
 					<router-link to="/items">items</router-link>
+					<router-link v-if="email === 'karol.velky@hellbilling.com'" to="/users">users</router-link>
 				</li>
 				<li v-if="isLoggedIn">
 					<base-button @click="logout">Logout {{ displayName }}</base-button>
@@ -29,6 +29,9 @@ export default {
 		},
 		displayName() {
 			return this.$store.getters.displayName;
+		},
+		email() {
+			return this.$store.getters.email;
 		},
 		userId() {
 			return this.$store.getters.userId;
